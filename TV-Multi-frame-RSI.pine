@@ -1,0 +1,53 @@
+//@version=5
+indicator(title="Stochastic RSI", shorttitle="StochRSI", format=format.price, precision=2, timeframe="", timeframe_gaps=false)
+
+// Input data to configure on chart
+smoothK = input.int (defval=3, title = "Stochastic %K", minval=1, step=1)
+lengthRSI = input.int (defval=14, title = "RSI Length", minval=1, step=1)
+lengthStoch = input.int (defval=14, title = "Stochastic Length", minval=1, step=1)
+src4 = input(close, title="RSI Source")
+
+upLine = input.int(defval=80, title="Upper Line Value")
+lowLine = input.int(defval=20, title="Lower Line Value")
+
+// Time frame input
+var GRP1 = "TIme Frame"
+tf_Input_A = input.timeframe("45", "Timeframe N 01", group = GRP1)
+tf_Input_B = input.timeframe("60", "Timeframe N 02", group = GRP1)
+tf_Input_C = input.timeframe("120", "Timeframe N 03", group = GRP1)
+tf_Input_D = input.timeframe("180", "Timeframe N 04", group = GRP1)
+
+// Calculate indicator
+rsi1 = ta.rsi(src4, lengthRSI)
+k = ta.sma(ta.stoch(rsi1, rsi1, rsi1, lengthStoch), smoothK)
+A = request.security(syminfo.tickerid, tf_Input_A, k)
+B = request.security(syminfo.tickerid, tf_Input_B, k)
+C = request.security(syminfo.tickerid, tf_Input_C, k)
+D = request.security(syminfo.tickerid, tf_Input_D, k)
+
+// Buy Condition
+belowLine_K = k < lowLine ? 1 : 0
+belowLine_A = A < lowLine ? 1 : 0
+belowLine_B = B < lowLine ? 1 : 0
+belowLine_C = C < lowLine ? 1 : 0
+belowLine_D = D < lowLine ? 1 : 0
+// Sell Condition
+aboveLine_K = k > upLine ? 1 : 0
+aboveLine_A = A > upLine ? 1 : 0
+aboveLine_B = B > upLine ? 1 : 0
+aboveLine_C = C > upLine ? 1 : 0
+aboveLine_D = D > upLine ? 1 : 0
+
+// Drawing - plot
+plot(k, "Original Chart", color=#7a838a)
+plot(A, "TF N01", color=#2bff00)
+plot(B, "TF N02", color=#fffb00)
+plot(C, "TF N03", color=#00c3ff)
+plot(D, "TF N04", color=#ff00ff)
+// Drawing - Lines
+h0 = hline(80, "Upper Line", color=#606060)
+h1 = hline(50, "Middle Line", color=#606060)
+h2 = hline(20, "Lower Line", color=#606060)
+// Drawing - Buy and Sell position
+bgcolor(belowLine_K and belowLine_A and belowLine_B and belowLine_C and belowLine_D ? color.new(#249628, 0) : na, title="Buy Color")
+bgcolor(aboveLine_K and aboveLine_A and aboveLine_B and aboveLine_C and aboveLine_D ? color.new(#ff3838, 0) : na, title="Sell Color")
