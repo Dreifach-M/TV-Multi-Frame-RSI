@@ -1,5 +1,5 @@
 //@version=5
-indicator(title="Stochastic RSI", shorttitle="StochRSI", format=format.price, precision=2, timeframe="", timeframe_gaps=false)
+indicator(title="Stochastic RSI", shorttitle="MTF-StochRSI", format=format.price, precision=2, timeframe="", timeframe_gaps=false)
 
 // Input data to configure on chart
 smoothK = input.int (defval=3, title = "Stochastic %K", minval=1, step=1)
